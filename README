@@ -1,0 +1,21 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=2979
+
+This script defines a parameter text object. A parameter is the text between parentheses or commas, typically found in a function's argument list. 
+
+See: 
+:help text-objects 
+  for a description of what can be done with text objects. 
+
+Also See: 
+:help a( 
+  If you want to operate on the parentheses also. 
+
+Like all the other text-objects, a parameter text object can be selected following these commands: 'd', 'c', 'y', 'v', etc. The script defines these operator mappings: 
+
+   aP    "a parameter", select a parameter, including one comma (if there is one). 
+
+   iP    "inner parameter", select a parameter, not including commas. 
+
+This is a slick version of argtextobj vimscript #2699; though mine is shorter and can handle counts (ie. c3aP).
+
+NOTE: Negative ratings don't help the script to improve. Instead, please send me an email (shown in my profile). Thank you.
