@@ -1,6 +1,6 @@
 " A Vim plugin that defines a parameter text object.
 " Maintainer: David Larson <david@thesilverstream.com>
-" Last Change: Feb 18, 2010
+" Last Change: Mar 15, 2010
 "
 " This script defines a parameter text object. A parameter is the text between
 " parentheses or commas, typically found in a function's argument list.
@@ -30,12 +30,6 @@
 "    omap     <silent> ia <Plug>ParameterObjectI
 "    vmap     <silent> aa <Plug>ParameterObjectA
 "    omap     <silent> aa <Plug>ParameterObjectA
-"
-" TODO:
-" - How to handle counts? (eg. 2daP)
-"   For operator mappings, vim seems to gobble up the count so it doesn't
-"   repeat the command. There also doesn't seem to be a way to obtain the
-"   count, like through <count> or any other means.
 
 if exists("loaded_parameter_objects") || &cp || v:version < 701
   finish
@@ -58,27 +52,38 @@ function s:parameter_object(mode)
    set virtualedit=onemore
    let l_save = @l
    try
-      " Search for the end of the parameter text object
-      if searchpair('(',',',')', 'Ws', "s:skip()") <= 0
+      " Search for the start of the parameter text object
+      if searchpair('(',',',')', 'bWs', "s:skip()") <= 0
          return
       endif
+
       normal! "lyl
       if a:mode == "a" && @l == ','
          let gotone = 1
          normal! ml
       else
-         normal! hmll
+         normal! lmlh
       endif
 
-      " Search for the start of the parameter text object
-      if searchpair('(',',',')', 'bW', "s:skip()") <= 0
-         normal! `'
-         return
-      endif
-      normal! "lyl
+      let c = v:count1
+      while c
+         " Search for the end of the parameter text object
+         if searchpair('(',',',')', 'W', "s:skip()") <= 0
+            normal! `'
+            return
+         endif
+         normal! "lyl
+         if @l == ')' && c > 1
+            " found the last parameter when more is asked for, so abort
+            normal! `'
+            return
+         endif
+         let c -= 1
+      endwhile
+
       if a:mode == "a" && @l == ',' && !exists("gotone")
       else
-         normal! l
+         normal! h
       endif
       normal! v`l
    finally
